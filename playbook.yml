@@ -1,0 +1,50 @@
+---
+- hosts: all
+  tasks:
+  - name: Install Git
+    apt: pkg=git state=latest
+    become: true
+
+  - name: Install Mercurial
+    apt: pkg=mercurial state=latest
+    become: true
+
+  - name: Install pip
+    apt: pkg=python-pip state=latest
+    become: true
+
+  - name: Install Virtualenv
+    pip: name=virtualenv
+    become: true
+
+  - name: Install Virtualenvwrapper
+    pip: name=virtualenvwrapper
+    become: true
+
+  - name: Install Python dev
+    apt: pkg=python-dev state=latest
+    become: true
+
+  - name: Download dotfiles repo
+    git: repo=https://github.com/danipv/dotfiles.git
+         dest=/home/vagrant/dotfiles
+         accept_hostkey=true
+
+  - name: Create virtualenvs dir
+    file: path=/home/vagrant/.virtualenvs state=directory mode=0755
+
+  - name: Link main dot files
+    file:
+      src: /home/vagrant/dotfiles/.bash_profile
+      dest: /home/vagrant/.bash_profile
+      state: link
+      force: yes
+    file:
+      src: /home/vagrant/dotfiles/.bashrc
+      dest: /home/vagrant/.bashrc
+      state: link
+      force: yes
+
+  - name: Update apt indexes
+    apt: update_cache=yes
+    become: true
